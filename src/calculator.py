@@ -1,0 +1,16 @@
+def sum(a,b):
+    return a + b
+
+def substract(a, b):
+    return a - b
+
+def multiply(a,b):
+    return a * b
+
+def divide(a , b):
+    try: 
+        resultado = a / b
+    except ZeroDivisionError:
+        resultado = "No se puede dividir por cero"
+
+    return resultado
