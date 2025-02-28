@@ -13,10 +13,17 @@ class BankAccountTests(unittest.TestCase):
     def tearDown(self):
         if os.path.exists(self.account.log_file):
             os.remove(self.account.log_file)
-
+    
     def _count_lines(self, filename):
         with open(filename, "r") as f:
             return len(f.readlines())
+        
+    def _read_lines(self, filename, text_compare):
+        with open(filename, "r") as f:
+            for line in f:
+                if text_compare.strip() in line.strip():
+                    return True
+        return False
 
     def test_deposit(self):
 
@@ -45,6 +52,13 @@ class BankAccountTests(unittest.TestCase):
         amount_send = 500
 
         assert self.account.transfer(current_balance, amount_send, destination_account) == "No se puede realizar la trasnferencia saldo insuficiente"
+
+    def test_trasnfer_log_no_balance(self):
+        current_balance = 0
+        destination_account = BankAccount(balance=2000)
+        amount_send = 500
+        self.account.transfer(current_balance, amount_send, destination_account)
+        assert self._read_lines(self.account.log_file,"No tiene saldo disponible") == True #Esta pasando poniendo falso cuando el comportamiento deberia ser True porque debe salir ese mensaje sin saldo.
 
     def test_transaction_log(self):
         self.account.deposit(500)

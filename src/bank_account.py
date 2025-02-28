@@ -32,6 +32,7 @@ class BankAccount:
             destination_account.deposit(amount_send)
             self.withdraw(amount_send)
         else:
+            self._log_transaction(f"No tiene saldo disponible")
             return "No se puede realizar la trasnferencia saldo insuficiente"
         
         return self.get_balance()
