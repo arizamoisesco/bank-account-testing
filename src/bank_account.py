@@ -26,7 +26,7 @@ class BankAccount:
         self._log_transaction(f"Checked balance. Current balance: {self.balance}")
         return self.balance
     
-    def transfer(self, current_balance, amount_send, destination_account):
+    def transfer(self, current_balance, amount_send, destination_account):#este código se puede mejorar con un try
         
         if  current_balance >= amount_send:
             destination_account.deposit(amount_send)
