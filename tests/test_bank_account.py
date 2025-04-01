@@ -25,24 +25,24 @@ class BankAccountTests(unittest.TestCase):
                     return True
         return False
 
-    def test_deposit(self):
+    def test_deposit_positive_amount_increase_balance(self):
 
         new_balance = self.account.deposit(500)
         self.assertEqual(new_balance, 1500, "El balance no es igual")
         #assert new_balance == 1500
 
-    def test_withdraw(self):
+    def test_withdraw_negative_amount_decrease_balance(self):
 
         new_balance = self.account.withdraw(200)
         #assert new_balance == 800
         self.assertEqual(new_balance, 800, "El balance no es igual")
 
-    def test_get_balance(self):
+    def test_get_balance_returns_current_balance(self):
 
         self.assertEqual(self.account.get_balance(), 1000)
         #assert self.account.get_balance() == 1000
 
-    def test_transfer(self):
+    def test_transfer_amount_send_decrease_balance(self):
         current_balance = self.account.get_balance()
         destination_account = BankAccount(balance=2000)
         amount_send = 500
@@ -50,7 +50,7 @@ class BankAccountTests(unittest.TestCase):
         self.assertEqual(self.account.transfer(current_balance, amount_send, destination_account), 500)
         #assert self.account.transfer(current_balance, amount_send, destination_account) == 500
     
-    def test_transfer_no_balance(self):
+    def test_transfer_no_balance_amount_send_deny_transfer(self):
         current_balance = 0
         destination_account = BankAccount(balance=2000)
         amount_send = 500
@@ -58,7 +58,7 @@ class BankAccountTests(unittest.TestCase):
         self.assertEqual(self.account.transfer(current_balance, amount_send, destination_account),"No se puede realizar la trasnferencia saldo insuficiente")
         #assert self.account.transfer(current_balance, amount_send, destination_account) == "No se puede realizar la trasnferencia saldo insuficiente"
 
-    def test_trasnfer_log_no_balance(self):
+    def test_trasnfer_amount_send_log_no_balance(self):
         current_balance = 0
         destination_account = BankAccount(balance=2000)
         amount_send = 500
@@ -67,13 +67,13 @@ class BankAccountTests(unittest.TestCase):
         self.assertTrue(self._read_lines(self.account.log_file,"No tiene saldo disponible"))
         #assert self._read_lines(self.account.log_file,"No tiene saldo disponible") == True #Ya funciona
 
-    def test_transaction_log(self):
+    def test_transaction_log_positive_amount_create_log(self):
         self.account.deposit(500)
 
         self.assertTrue(os.path.exists("transaction_log.txt"))
         #assert os.path.exists("transaction_log.txt")
 
-    def test_count_transactions(self):
+    def test_count_transactions_new_deposit_total_transactions(self):
         self.assertEqual(self._count_lines(self.account.log_file), 1)
         #assert self._count_lines(self.account.log_file) == 1
         self.account.deposit(500)
