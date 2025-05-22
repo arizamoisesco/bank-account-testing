@@ -1,5 +1,9 @@
 import unittest, os
 
+from unittest.mock import patch
+
+from src.exceptions import WithdrawalTimeRestrictionError, WithdrawalDayRestrictionError
+
 from src.bank_account import BankAccount
 
 class BankAccountTests(unittest.TestCase):
@@ -79,3 +83,44 @@ class BankAccountTests(unittest.TestCase):
         self.account.deposit(500)
         self.assertEqual(self._count_lines(self.account.log_file), 2)
         #assert self._count_lines(self.account.log_file) == 2
+
+    @patch("src.bank_account.datetime") #Accedemos al módulo de
+    def test_withdraw_during_bussines_hours(self, mock_datetime):
+        mock_datetime.now.return_value.hour = 10 #Validando que funcione si el horario es a las 10 am
+        new_balance = self.account.withdraw(100)
+        self.assertEqual(new_balance, 900)
+
+
+    @patch("src.bank_account.datetime") #Accedemos al módulo de
+    def test_withdraw_disallow_before_bussines_hours(self, mock_datetime):
+        mock_datetime.now.return_value.hour = 7 #Validando que falle si el horario es a las 7 am
+        with self.assertRaises(WithdrawalTimeRestrictionError):
+
+            self.account.withdraw(100)
+
+    @patch("src.bank_account.datetime") #Accedemos al módulo de
+    def test_withdraw_disallow_after_bussines_hours(self, mock_datetime):
+        mock_datetime.now.return_value.hour = 5 #Validando que falle si el horario es a las 7 am
+        with self.assertRaises(WithdrawalTimeRestrictionError):
+
+            self.account.withdraw(100)
+
+    @patch("src.bank_account.datetime")
+    def test_withdraw_disallow_weekends(self, mock_datetime):
+        mock_datetime.now.return_value.hour = 10 # Hay que poner la hora valida 
+        mock_datetime.now.return_value.weekday.return_value = 5 # Ahora si poner lo necesario para que falle en los dias correspondientes
+        with self.assertRaises(WithdrawalDayRestrictionError):
+
+            self.account.withdraw(100)
+
+    def test_deposit_multiple_ammounts(self):
+        test_cases = [
+            {"ammount": 100, "expected":1100},
+            {"ammount": 3000, "expected":4000},
+            {"ammount": 4500, "expected":5500},
+        ]
+        for case in test_cases:
+            with self.subTest(case=case):
+                self.account = BankAccount(balance=1000, log_file="transactions.txt")
+                new_balance = self.account.deposit(case["ammount"])
+                self.assertEqual(new_balance, case["expected"])
