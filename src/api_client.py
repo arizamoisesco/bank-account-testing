@@ -55,8 +55,10 @@ def check_ip(ip):
     #Si cumple continua el proceso
     #Sino manda un error
 
+'''
 if __name__ == "__main__":
     print(get_location("8.8.8.8"))
     print(get_country_code("8.8.8.8"))
     print(check_ip("8.8.8.8"))
     print(get_geo_localitation("8.8.8.8"))
+'''
