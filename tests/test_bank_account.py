@@ -38,6 +38,7 @@ class BankAccountTests(unittest.TestCase):
     @patch("src.bank_account.datetime")
     def test_withdraw_negative_amount_decrease_balance(self, mock_datetime):
         mock_datetime.now.return_value.hour = 10
+        mock_datetime.now.return_value.weekday.return_value = 4
         new_balance = self.account.withdraw(200)
         #assert new_balance == 800
         self.assertEqual(new_balance, 800, "El balance no es igual")
@@ -47,7 +48,12 @@ class BankAccountTests(unittest.TestCase):
         self.assertEqual(self.account.get_balance(), 1000)
         #assert self.account.get_balance() == 1000
 
-    def test_transfer_amount_send_decrease_balance(self):
+    @patch("src.bank_account.datetime")
+    def test_transfer_amount_send_decrease_balance(self, mock_datetime):
+
+        mock_datetime.now.return_value.hour = 10
+        mock_datetime.now.return_value.weekday.return_value = 2
+
         current_balance = self.account.get_balance()
         destination_account = BankAccount(balance=2000)
         amount_send = 500
@@ -88,6 +94,7 @@ class BankAccountTests(unittest.TestCase):
     @patch("src.bank_account.datetime") #Accedemos al módulo de
     def test_withdraw_during_bussines_hours(self, mock_datetime):
         mock_datetime.now.return_value.hour = 10 #Validando que funcione si el horario es a las 10 am
+        mock_datetime.now.return_value.weekday.return_value = 4
         new_balance = self.account.withdraw(100)
         self.assertEqual(new_balance, 900)
 
@@ -95,6 +102,7 @@ class BankAccountTests(unittest.TestCase):
     @patch("src.bank_account.datetime") #Accedemos al módulo de
     def test_withdraw_disallow_before_bussines_hours(self, mock_datetime):
         mock_datetime.now.return_value.hour = 7 #Validando que falle si el horario es a las 7 am
+        mock_datetime.now.return_value.weekday.return_value = 4
         with self.assertRaises(WithdrawalTimeRestrictionError):
 
             self.account.withdraw(100)
